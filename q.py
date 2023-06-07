@@ -1,4 +1,5 @@
 from ecdsa import ellipticcurve
+from multiprocessing import Pool
 
 a = 0
 b = 7
@@ -21,19 +22,21 @@ else:
     print("Starting point is not on curve")
     exit()
 
-counter = 1
-x1, y1 = x, y
-x2, y2 = 0, 0
-
-while counter < n:
-    counter += 1
-    if x1 == x:
+def compute_point(counter):
+    global x, y, curve, p
+    if x == x:
         s = (3 * x ** 2 + a) * pow(2 * y, p - 2, p)
     else:
-        s = (y1 - y) * pow(x1 - x, p - 2, p)
+        s = (y - y) * pow(x - x, p - 2, p)
 
-    x2 = (s ** 2 - x - x1) % p
-    y2 = (s * (x1 - x2) - y1) % p
+    x2 = (s ** 2 - x - x) % p
+    y2 = (s * (x - x2) - y) % p
 
-    x1, y1 = x2, y2
-    print("%dP\t(%d,%d)" % (counter, x1, y1))
+    return x2, y2
+
+if __name__ == "__main__":
+    pool = Pool()  # Use all available CPU cores
+    results = pool.map(compute_point, range(1, n+1))
+
+    for counter, (x1, y1) in enumerate(results, start=1):
+        print("%dP\t(%d,%d)" % (counter, x1, y1))
