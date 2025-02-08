@@ -1,2 +1,2 @@
 # Bitcoin Mining Hack
-comimg soon
+coming soon
